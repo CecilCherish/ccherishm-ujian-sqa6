@@ -1,0 +1,25 @@
+# --- UiPath Temporary, Cache & Local Settings ---
+.local/
+.settings/
+.storage/
+.tmh/
+.objects/
+.entities/
+.templates/
+*.bak
+project.uiproj
+
+# --- Package & Raw Text Logs ---
+*.log
+*.nupkg
+
+# --- AI Agent / IDE Specific (Antigravity / Claude) ---
+.claude/
+AGENTS.md
+CLAUDE.md
+plan.md
+
+# --- OS & Editor Files ---
+.DS_Store
+Thumbs.db
+.vscode/
