@@ -1,0 +1,13 @@
+﻿{
+  "Name": "Edge Bank Nusantara - Live Settlement Monitor",
+  "Type": "Screen",
+  "Id": "1Ih9o4jmFkyepQ4M8deEEA",
+  "Reference": "u8b3JnI5KUK4kK5wl2d6cA/1Ih9o4jmFkyepQ4M8deEEA",
+  "ParentRef": "u8b3JnI5KUK4kK5wl2d6cA/WbPbocN8uk-yfsOPKV_91g",
+  "Created": "2026-11-13T13:56:23.097335Z",
+  "Updated": "2026-11-13T13:56:23.097335Z",
+  "CreatedBy": [
+    "UiPath.UIAutomationCore, Version=26.10.7.0, Culture=neutral, PublicKeyToken=null",
+    "UiPath.Platform, Version=26.9.0.0, Culture=neutral, PublicKeyToken=null"
+  ]
+}

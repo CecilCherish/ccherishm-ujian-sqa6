@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ObjectRepositoryTargetData ContentHash="UMryXPXOTUybMmcP1tLGjw" Reference="u8b3JnI5KUK4kK5wl2d6cA/fSGTURm5sUKcxeYTAf6yqQ" xmlns="http://schemas.uipath.com/workflow/activities/uix" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ObjectRepositoryTargetData.Data>
+    <TargetAnchorable x:Key="TargetAnchorable" BrowserURL="" DesignTimeRectangle="329, 343, 1068, 50" ElementType="InputBox" ElementVisibilityArgument="Interactive" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' fuzzylevel:aaname='0.0' matching:title='fuzzy' fuzzylevel:title='0.0' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' fuzzylevel:name='0.0' /&gt;&lt;ctrl name='Masukkan ID Transaksi (contoh: TRX-2026-0001)' role='editable text' automationid='' matching:name='fuzzy' fuzzylevel:name='0.0' matching:automationid='fuzzy' fuzzylevel:automationid='0.0' /&gt;" Guid="74d82542-031b-4a46-aba5-5077af39fd75" IsResponsive="True" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="FuzzySelector" Version="V6" WaitForReadyArgument="Interactive">
+      <TargetAnchorable.Anchors>
+        <scg:List x:TypeArguments="ITarget" Capacity="4">
+          <Target DesignTimeRectangle="329, 300, 650, 27" ElementType="Text" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='Pencarian Settlement per ID Transaksi (State 3-4 Process Transac*' role='grouping' /&gt;&lt;ctrl name='Pencarian Settlement per ID Transaksi (State 3-4 Process Transac*' role='text' /&gt;" Guid="439a6e09-24a3-49ce-85ad-d3a78ea98434" SearchSteps="Selector" />
+        </scg:List>
+      </TargetAnchorable.Anchors>
+      <imageRef attrName="InformativeScreenshot" originalValue="d82fd52ce242625a3e3c7cecfa232872.jpg" xmlns="">0NiyfbREwqUGX7kV-l_VRuA</imageRef>
+    </TargetAnchorable>
+    <x:String x:Key="ActivityType">TypeInto</x:String>
+  </ObjectRepositoryTargetData.Data>
+</ObjectRepositoryTargetData>

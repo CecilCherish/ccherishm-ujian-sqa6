@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ObjectRepositoryTargetData ContentHash="8cDoI_GIrkO1ghKn0wwh-A" xmlns="http://schemas.uipath.com/workflow/activities/uix" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ObjectRepositoryTargetData.Data>
+    <TargetAnchorable x:Key="TargetAnchorable" BrowserURL="" DesignTimeRectangle="663, 473, 75, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='BI-FAST' role='text' /&gt;" Guid="285c07fb-8d48-441a-8508-80e14d6dae38" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive">
+      <imageRef attrName="InformativeScreenshot" originalValue="83b575e71f766aec67afd2033f286d9d.jpg" xmlns="">0cABQuU13vkKXh4RpRM27Mg</imageRef>
+    </TargetAnchorable>
+    <x:String x:Key="ActivityType">GetText</x:String>
+  </ObjectRepositoryTargetData.Data>
+</ObjectRepositoryTargetData>

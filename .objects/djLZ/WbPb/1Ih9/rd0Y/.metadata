@@ -1,0 +1,14 @@
+﻿{
+  "Name": "Cari Transaksi",
+  "Type": "Element",
+  "TaxonomyType": "Button",
+  "Id": "rd0YPmzmiEWfVpwwcZKdHA",
+  "Reference": "u8b3JnI5KUK4kK5wl2d6cA/rd0YPmzmiEWfVpwwcZKdHA",
+  "ParentRef": "u8b3JnI5KUK4kK5wl2d6cA/1Ih9o4jmFkyepQ4M8deEEA",
+  "Created": "2026-11-13T14:06:31.2865341Z",
+  "Updated": "2026-11-13T14:06:31.2865341Z",
+  "CreatedBy": [
+    "UiPath.UIAutomationCore, Version=26.10.7.0, Culture=neutral, PublicKeyToken=null",
+    "UiPath.Platform, Version=26.9.0.0, Culture=neutral, PublicKeyToken=null"
+  ]
+}

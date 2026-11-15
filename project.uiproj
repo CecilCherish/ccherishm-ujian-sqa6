@@ -1,0 +1,6 @@
+{
+  "Name": "RobotCoreBank",
+  "ProjectType": "Process",
+  "Description": "cek kecocokan data dari web html local \"C:\\TUGASKKu\\sqa-batch-31\\banking-monitoring-portal.html\" dengan excel \"C:\\TUGASKKu\\sqa-batch-31\\buku bahan\\dokumen SIT\\Core_Banking_Log.xlsx\"",
+  "MainFile": "Main.xaml"
+}
