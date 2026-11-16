@@ -1,4 +1,4 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Drawing;assembly=System.Drawing.Common" xmlns:sd1="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives" xmlns:sda="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="ActivityBuilder_1" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:sd="clr-namespace:System.Data;assembly=System.Data.Common" xmlns:sd1="clr-namespace:System.Drawing;assembly=System.Drawing.Common" xmlns:sd2="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:uix="http://schemas.uipath.com/workflow/activities/uix" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <TextExpression.NamespacesForImplementation>
     <sco:Collection x:TypeArguments="x:String">
       <x:String>System.Activities</x:String>
@@ -112,10 +112,10 @@
       <AssemblyReference>System.Linq.Expressions</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="800,3800" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="1042,8013.6" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
-      <Variable x:TypeArguments="sda:DataTable" Name="dtCoreTransactions" />
-      <Variable x:TypeArguments="sda:DataTable" Name="dtAuditResult" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtCoreTransactions" />
+      <Variable x:TypeArguments="sd:DataTable" Name="dtAuditResult" />
       <Variable x:TypeArguments="x:String" Name="searchTransactionID" />
       <Variable x:TypeArguments="x:String" Name="waktu" />
       <Variable x:TypeArguments="x:String" Name="rek" />
@@ -134,64 +134,55 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-
-    <!-- 1. Read Data Transaksi dari Core_Banking_Log.xlsx -->
-    <ui:ReadRange Range="{x:Null}" AddHeaders="True" DisplayName="Read Range Workbook - Core_Banking_Log" sap:VirtualizedContainerService.HintSize="737.6,88" sap2010:WorkflowViewState.IdRef="ReadRange_1" SheetName="Core_Transactions" WorkbookPath="Core_Banking_Log.xlsx">
+    <ui:ReadRange Range="{x:Null}" AddHeaders="True" DisplayName="Read Range Workbook - Core_Banking_Log" sap:VirtualizedContainerService.HintSize="737.6,226.4" sap2010:WorkflowViewState.IdRef="ReadRange_1" SheetName="Core_Transactions" WorkbookPath="Core_Banking_Log.xlsx">
       <ui:ReadRange.DataTable>
-        <OutArgument x:TypeArguments="sda:DataTable">
-          <CSharpReference x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpReference_dtCore">dtCoreTransactions</CSharpReference>
+        <OutArgument x:TypeArguments="sd:DataTable">
+          <CSharpReference x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpReference_dtCore">dtCoreTransactions</CSharpReference>
         </OutArgument>
       </ui:ReadRange.DataTable>
     </ui:ReadRange>
-
-    <!-- 2. Inisialisasi DataTable Hasil Audit -->
-    <Assign DisplayName="Inisialisasi dtAuditResult (11 Kolom)" sap:VirtualizedContainerService.HintSize="737.6,81.6" sap2010:WorkflowViewState.IdRef="Assign_InitAuditDT">
+    <Assign DisplayName="Inisialisasi dtAuditResult (11 Kolom)" sap:VirtualizedContainerService.HintSize="737.6,174.4" sap2010:WorkflowViewState.IdRef="Assign_InitDataTable">
       <Assign.To>
-        <OutArgument x:TypeArguments="sda:DataTable">
-          <CSharpReference x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpReference_dtAudit">dtAuditResult</CSharpReference>
+        <OutArgument x:TypeArguments="sd:DataTable">
+          <CSharpReference x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpReference_dtAudit">dtAuditResult</CSharpReference>
         </OutArgument>
       </Assign.To>
       <Assign.Value>
-        <InArgument x:TypeArguments="sda:DataTable">
-          <CSharpValue x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpValue_InitAuditDT">((System.Func&lt;System.Data.DataTable&gt;)(() =&gt; { var dt = new System.Data.DataTable(); dt.Columns.Add(&quot;ID_Transaksi&quot;, typeof(string)); dt.Columns.Add(&quot;Waktu_Transaksi&quot;, typeof(string)); dt.Columns.Add(&quot;No_Rekening&quot;, typeof(string)); dt.Columns.Add(&quot;Channel_Core&quot;, typeof(string)); dt.Columns.Add(&quot;Nominal_Core&quot;, typeof(string)); dt.Columns.Add(&quot;Status_Core&quot;, typeof(string)); dt.Columns.Add(&quot;Web_Channel&quot;, typeof(string)); dt.Columns.Add(&quot;Web_Nominal&quot;, typeof(string)); dt.Columns.Add(&quot;Web_Status&quot;, typeof(string)); dt.Columns.Add(&quot;Audit_Status&quot;, typeof(string)); dt.Columns.Add(&quot;Keterangan_Audit&quot;, typeof(string)); return dt; }))()</CSharpValue>
+        <InArgument x:TypeArguments="sd:DataTable">
+          <CSharpValue x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpValue_InitDT">new System.Data.DataTable("Audit_Result") { Columns = { "ID_Transaksi", "Waktu_Transaksi", "No_Rekening", "Channel_Core", "Nominal_Core", "Status_Core", "Web_Channel", "Web_Nominal", "Web_Status", "Audit_Status", "Keterangan_Audit" } }</CSharpValue>
         </InArgument>
       </Assign.Value>
     </Assign>
-
-    <!-- 3. Buka Portal Web Edge Bank Nusantara & Loop Setiap Baris Transaksi -->
-    <uix:NApplicationCard AttachMode="ByInstance" DisplayName="Edge Bank Nusantara - Live Settlement Monitor" HealingAgentBehavior="Job" sap:VirtualizedContainerService.HintSize="737.6,3100" sap2010:WorkflowViewState.IdRef="NApplicationCard_1" InteractionMode="DebuggerApi" ScopeGuid="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V2">
+    <WriteLine DisplayName="Write Line - Status Inisialisasi Kolom" sap:VirtualizedContainerService.HintSize="737.6,122.4" sap2010:WorkflowViewState.IdRef="WriteLine_ColCount">
+      <InArgument x:TypeArguments="x:String">
+        <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpValue_ColCount">"dtAuditResult diinisialisasi dengan " + dtAuditResult.Columns.Count.ToString() + " kolom."</CSharpValue>
+      </InArgument>
+    </WriteLine>
+    <uix:NApplicationCard AttachMode="ByInstance" DisplayName="Edge Bank Nusantara - Live Settlement Monitor" HealingAgentBehavior="Job" sap:VirtualizedContainerService.HintSize="737.6,7098.4" sap2010:WorkflowViewState.IdRef="NApplicationCard_1" ScopeGuid="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V2">
       <uix:NApplicationCard.Body>
         <ActivityAction x:TypeArguments="x:Object">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="x:Object" Name="WSSessionData" />
           </ActivityAction.Argument>
-          <Sequence DisplayName="Loop Transaksi" sap:VirtualizedContainerService.HintSize="704,2850" sap2010:WorkflowViewState.IdRef="Sequence_2">
+          <Sequence DisplayName="Loop Transaksi" sap:VirtualizedContainerService.HintSize="672,6895.2" sap2010:WorkflowViewState.IdRef="Sequence_2">
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
-
-            <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DisplayName="For Each Row in dtCoreTransactions" sap:VirtualizedContainerService.HintSize="670.4,2750" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
-              <ui:ForEachRow.DataTable>
-                <InArgument x:TypeArguments="sda:DataTable">
-                  <CSharpValue x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpValue_dtCoreVal">dtCoreTransactions</CSharpValue>
-                </InArgument>
-              </ui:ForEachRow.DataTable>
+            <ui:ForEachRow ColumnNames="{x:Null}" CurrentIndex="{x:Null}" DisplayName="For Each Row in dtCoreTransactions" sap:VirtualizedContainerService.HintSize="638.4,6835.2" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
               <ui:ForEachRow.Body>
-                <ActivityAction x:TypeArguments="sda:DataRow">
+                <ActivityAction x:TypeArguments="sd:DataRow">
                   <ActivityAction.Argument>
-                    <DelegateInArgument x:TypeArguments="sda:DataRow" Name="CurrentRow" />
+                    <DelegateInArgument x:TypeArguments="sd:DataRow" Name="CurrentRow" />
                   </ActivityAction.Argument>
-                  <Sequence DisplayName="Proses Baris Transaksi" sap:VirtualizedContainerService.HintSize="636.8,2550" sap2010:WorkflowViewState.IdRef="Sequence_Row">
+                  <Sequence DisplayName="Proses Baris Transaksi" sap:VirtualizedContainerService.HintSize="636.8,6662.4" sap2010:WorkflowViewState.IdRef="Sequence_Row">
                     <sap:WorkflowViewStateService.ViewState>
                       <scg:Dictionary x:TypeArguments="x:String, x:Object">
                         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                       </scg:Dictionary>
                     </sap:WorkflowViewStateService.ViewState>
-
-                    <!-- Ekstrak Data Baris Core -->
-                    <Assign DisplayName="Ekstrak ID_Transaksi" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_ID">
+                    <Assign DisplayName="Ekstrak ID_Transaksi" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_ID">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_ID">searchTransactionID</CSharpReference>
@@ -203,8 +194,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Ekstrak Waktu_Transaksi" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_Waktu">
+                    <Assign DisplayName="Ekstrak Waktu_Transaksi" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_Waktu">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_Waktu">waktu</CSharpReference>
@@ -216,8 +206,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Ekstrak No_Rekening" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_Rek">
+                    <Assign DisplayName="Ekstrak No_Rekening" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_Rek">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_Rek">rek</CSharpReference>
@@ -229,8 +218,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Ekstrak Channel" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_Ch">
+                    <Assign DisplayName="Ekstrak Channel" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_Ch">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_Ch">channelCore</CSharpReference>
@@ -242,8 +230,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Ekstrak Nominal_Core" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_Nom">
+                    <Assign DisplayName="Ekstrak Nominal_Core" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_Nom">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_Nom">nominalCore</CSharpReference>
@@ -255,8 +242,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Ekstrak Status_Core" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_Stat">
+                    <Assign DisplayName="Ekstrak Status_Core" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_Stat">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_Stat">statusCore</CSharpReference>
@@ -268,9 +254,7 @@
                         </InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <!-- Reset Variabel Web & Audit -->
-                    <Assign DisplayName="Reset Web Channel" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_RstCh">
+                    <Assign DisplayName="Reset Web Channel" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_RstCh">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_RstCh">channel</CSharpReference>
@@ -280,8 +264,7 @@
                         <InArgument x:TypeArguments="x:String">-</InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Reset Web Nominal" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_RstNom">
+                    <Assign DisplayName="Reset Web Nominal" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_RstNom">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_RstNom">nominal</CSharpReference>
@@ -291,8 +274,7 @@
                         <InArgument x:TypeArguments="x:String">-</InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Reset Web Status" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_RstStat">
+                    <Assign DisplayName="Reset Web Status" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_RstStat">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_RstStat">status</CSharpReference>
@@ -302,8 +284,7 @@
                         <InArgument x:TypeArguments="x:String">-</InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <Assign DisplayName="Reset Web TrxID" sap:VirtualizedContainerService.HintSize="603.2,81.6" sap2010:WorkflowViewState.IdRef="Assign_RstID">
+                    <Assign DisplayName="Reset Web TrxID" sap:VirtualizedContainerService.HintSize="603.2,174.4" sap2010:WorkflowViewState.IdRef="Assign_RstID">
                       <Assign.To>
                         <OutArgument x:TypeArguments="x:String">
                           <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_RstID">transactionID</CSharpReference>
@@ -313,61 +294,65 @@
                         <InArgument x:TypeArguments="x:String">-</InArgument>
                       </Assign.Value>
                     </Assign>
-
-                    <!-- TryCatch untuk Validasi BRE & Interaksi Web SE -->
-                    <TryCatch DisplayName="Try Catch Validasi &amp; Web Search" sap:VirtualizedContainerService.HintSize="603.2,1200" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+                    <TryCatch DisplayName="Try Catch Validasi &amp; Web Search" sap:VirtualizedContainerService.HintSize="603.2,4670.4" sap2010:WorkflowViewState.IdRef="TryCatch_1">
                       <TryCatch.Try>
-                        <Sequence DisplayName="Try Process Transaction" sap:VirtualizedContainerService.HintSize="566.4,950" sap2010:WorkflowViewState.IdRef="Sequence_TryProcess">
+                        <Sequence DisplayName="Try Process Transaction" sap:VirtualizedContainerService.HintSize="531.2,3684" sap2010:WorkflowViewState.IdRef="Sequence_TryProcess">
                           <sap:WorkflowViewStateService.ViewState>
                             <scg:Dictionary x:TypeArguments="x:String, x:Object">
                               <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                             </scg:Dictionary>
                           </sap:WorkflowViewStateService.ViewState>
-
-                          <!-- Aturan BRE 1: Validasi Panjang No Rekening (harus 10 digit) -->
-                          <If DisplayName="If Rekening Bukan 10 Digit" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="If_BRE_Rek">
+                          <If DisplayName="If Rekening Bukan 10 Digit" sap:VirtualizedContainerService.HintSize="497.6,336" sap2010:WorkflowViewState.IdRef="If_BRE_Rek">
                             <If.Condition>
                               <InArgument x:TypeArguments="x:Boolean">
                                 <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondRek">rek.Length != 10</CSharpValue>
                               </InArgument>
                             </If.Condition>
                             <If.Then>
-                              <Sequence DisplayName="Then Throw BRE Rekening" sap:VirtualizedContainerService.HintSize="416,160" sap2010:WorkflowViewState.IdRef="Sequence_ThrowRek">
-                                <ui:Throw DisplayName="Throw BRE Rekening Tidak Valid" sap:VirtualizedContainerService.HintSize="382.4,90.4" sap2010:WorkflowViewState.IdRef="Throw_1">
-                                  <ui:Throw.Exception>
-                                    <InArgument x:TypeArguments="s:Exception">
-                                      <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowRek">new UiPath.Core.BusinessRuleException("[BRE] Nomor rekening tidak valid (" + rek + "): panjang bukan 10 digit (Suspect Anomali/Fraud)")</CSharpValue>
-                                    </InArgument>
-                                  </ui:Throw.Exception>
-                                </ui:Throw>
+                              <Sequence DisplayName="Then Throw BRE Rekening" sap:VirtualizedContainerService.HintSize="449.6,173.6" sap2010:WorkflowViewState.IdRef="Sequence_ThrowRek">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Throw DisplayName="Throw BRE Rekening Tidak Valid" sap:VirtualizedContainerService.HintSize="416,113.6" sap2010:WorkflowViewState.IdRef="Throw_1">
+                                  <InArgument x:TypeArguments="s:Exception">
+                                    <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowRek">new UiPath.Core.BusinessRuleException("[BRE] Nomor rekening tidak valid (" + rek + "): panjang bukan 10 digit (Suspect Anomali/Fraud)")</CSharpValue>
+                                  </InArgument>
+                                </Throw>
                               </Sequence>
                             </If.Then>
                           </If>
-
-                          <!-- Aturan BRE 2: Validasi Nominal Core <= 0 dengan Status SUCCESS -->
-                          <If DisplayName="If Nominal 0 Status SUCCESS" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="If_BRE_Nom">
+                          <If DisplayName="If Nominal 0 Status SUCCESS" sap:VirtualizedContainerService.HintSize="497.6,336" sap2010:WorkflowViewState.IdRef="If_BRE_Nom">
                             <If.Condition>
                               <InArgument x:TypeArguments="x:Boolean">
-                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondNom">(decimal.TryParse(nominalCore, out decimal nCheck) ? nCheck : 0) &lt;= 0 &amp;&amp; statusCore.ToUpper() == "SUCCESS"</CSharpValue>
+                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondNom">Convert.ToDecimal(string.IsNullOrEmpty(nominalCore) ? "0" : nominalCore) &lt;= 0 &amp;&amp; statusCore.ToUpper() == "SUCCESS"</CSharpValue>
                               </InArgument>
                             </If.Condition>
                             <If.Then>
-                              <Sequence DisplayName="Then Throw BRE Nominal" sap:VirtualizedContainerService.HintSize="416,160" sap2010:WorkflowViewState.IdRef="Sequence_ThrowNom">
-                                <ui:Throw DisplayName="Throw BRE Nominal Tidak Valid" sap:VirtualizedContainerService.HintSize="382.4,90.4" sap2010:WorkflowViewState.IdRef="Throw_2">
-                                  <ui:Throw.Exception>
-                                    <InArgument x:TypeArguments="s:Exception">
-                                      <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowNom">new UiPath.Core.BusinessRuleException("[BRE] Nominal transaksi tidak valid / 0 (" + nominalCore + ") dengan status SUCCESS (Suspect Fraud)")</CSharpValue>
-                                    </InArgument>
-                                  </ui:Throw.Exception>
-                                </ui:Throw>
+                              <Sequence DisplayName="Then Throw BRE Nominal" sap:VirtualizedContainerService.HintSize="449.6,173.6" sap2010:WorkflowViewState.IdRef="Sequence_ThrowNom">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Throw DisplayName="Throw BRE Nominal Tidak Valid" sap:VirtualizedContainerService.HintSize="416,113.6" sap2010:WorkflowViewState.IdRef="Throw_2">
+                                  <InArgument x:TypeArguments="s:Exception">
+                                    <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowNom">new UiPath.Core.BusinessRuleException("[BRE] Nominal transaksi tidak valid / 0 (" + nominalCore + ") dengan status SUCCESS (Suspect Fraud)")</CSharpValue>
+                                  </InArgument>
+                                </Throw>
                               </Sequence>
                             </If.Then>
                           </If>
-
-                          <!-- Transaksi Lolos BRE: Lakukan Pencarian Web Portal -->
-                          <uix:NTypeInto ActivateBefore="True" ClickBeforeMode="Single" DisplayName="Type Into 'search-trx-id'" EmptyFieldMode="SingleLine" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NTypeInto_1" InteractionMode="HardwareEvents" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <uix:NTypeInto ActivateBefore="True" ClickBeforeMode="Single" DisplayName="Type Into 'search-trx-id'" EmptyFieldMode="SingleLine" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,245.6" sap2010:WorkflowViewState.IdRef="NTypeInto_1" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
                             <uix:NTypeInto.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="UMryXPXOTUybMmcP1tLGjw" DesignTimeRectangle="329, 343, 1068, 50" ElementType="InputBox" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='search-trx-id' tag='INPUT' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='Masukkan ID Transaksi (contoh: TRX-2026-0001)' role='editable text' /&gt;" Guid="74d82542-031b-4a46-aba5-5077af39fd75" InformativeScreenshot="d82fd52ce242625a3e3c7cecfa232872.jpg" IsResponsive="True" Reference="u8b3JnI5KUK4kK5wl2d6cA/fSGTURm5sUKcxeYTAf6yqQ" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="329, 343, 1068, 50" ElementType="InputBox" ElementVisibilityArgument="Interactive" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' fuzzylevel:aaname='0.0' matching:title='fuzzy' fuzzylevel:title='0.0' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' fuzzylevel:name='0.0' /&gt;&lt;ctrl name='Masukkan ID Transaksi (contoh: TRX-2026-0001)' role='editable text' automationid='' matching:name='fuzzy' fuzzylevel:name='0.0' matching:automationid='fuzzy' fuzzylevel:automationid='0.0' /&gt;" Guid="ee1272bd-d496-4584-bff9-87ed95cda8c9" InformativeScreenshot="d82fd52ce242625a3e3c7cecfa232872.jpg" IsResponsive="True" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="FuzzySelector" Version="V6" WaitForReadyArgument="Interactive">
+                                <uix:TargetAnchorable.Anchors>
+                                  <scg:List x:TypeArguments="uix:ITarget" Capacity="4">
+                                    <uix:Target DesignTimeRectangle="329, 300, 650, 27" ElementType="Text" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='Pencarian Settlement per ID Transaksi (State 3-4 Process Transac*' role='grouping' /&gt;&lt;ctrl name='Pencarian Settlement per ID Transaksi (State 3-4 Process Transac*' role='text' /&gt;" Guid="f0fdcb5c-1cd8-42c5-8a37-b60af479e4ac" SearchSteps="Selector" />
+                                  </scg:List>
+                                </uix:TargetAnchorable.Anchors>
+                              </uix:TargetAnchorable>
                             </uix:NTypeInto.Target>
                             <uix:NTypeInto.Text>
                               <InArgument x:TypeArguments="x:String">
@@ -375,23 +360,15 @@
                               </InArgument>
                             </uix:NTypeInto.Text>
                           </uix:NTypeInto>
-
-                          <uix:NClick ActivateBefore="True" ClickType="Single" DisplayName="Click 'Cari Transaksi'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NClick_1" InteractionMode="HardwareEvents" KeyModifiers="None" MouseButton="Left" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <uix:NClick ActivateBefore="True" ClickType="Single" DisplayName="Click 'btn-search-trx'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,193.6" sap2010:WorkflowViewState.IdRef="NClick_1" KeyModifiers="None" MouseButton="Left" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
                             <uix:NClick.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="8rUg97Lzrk6oXiCcegSgoA" DesignTimeRectangle="1411, 344, 179, 48" ElementType="Button" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='btn-search-trx' tag='BUTTON' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='Cari Transaksi' role='push button' /&gt;" Guid="520a02c8-1846-4478-835c-f13bb8acaad7" InformativeScreenshot="47da81b0d7db7ee9394d042e9ef8234f.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/rd0YPmzmiEWfVpwwcZKdHA" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="1411, 344, 179, 48" ElementType="Button" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='Cari Transaksi' role='push button' /&gt;" Guid="17255b42-a31b-4f10-b0b7-a87d45c454c2" InformativeScreenshot="47da81b0d7db7ee9394d042e9ef8234f.jpg" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
                             </uix:NClick.Target>
                           </uix:NClick>
-
-                          <!-- Ambil Nilai dari Web Portal Menggunakan ID Web Selector -->
-                          <uix:NGetText DisplayName="Get Text 'web-trx-id'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NGetText_1" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <Delay DisplayName="Delay Render Web (500ms)" Duration="00:00:00.5000000" sap:VirtualizedContainerService.HintSize="497.6,122.4" sap2010:WorkflowViewState.IdRef="Delay_WebRender" />
+                          <uix:NGetText DisplayName="Get Text 'web-trx-id'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,142.4" sap2010:WorkflowViewState.IdRef="NGetText_1" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
                             <uix:NGetText.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="QbaNFgJgq0KYd21jycs3dQ" DesignTimeRectangle="344, 473, 147, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='web-trx-id' tag='SPAN' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl role='text' /&gt;" Guid="98a11e11-6f77-4a5f-b2e5-6c4debb961f0" InformativeScreenshot="552cb7307c73633cab5e84377c19947f.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/uaju3NX4kkWJUYshqmmQbg" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive">
-                                <uix:TargetAnchorable.Anchors>
-                                  <scg:List x:TypeArguments="uix:ITarget" Capacity="1">
-                                    <uix:Target ElementType="Text" FullSelectorArgument="&lt;webctrl tag='LABEL' aaname='ID Transaksi' /&gt;" FuzzySelectorArgument="&lt;ctrl name='ID Transaksi' role='text' /&gt;" Guid="439a6e09-24a3-49ce-85ad-d3a78ea98434" SearchSteps="Selector" />
-                                  </scg:List>
-                                </uix:TargetAnchorable.Anchors>
-                              </uix:TargetAnchorable>
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="344, 473, 147, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl name='TRX-2026-0001' role='text' /&gt;" Guid="a82526a4-a684-4804-b6ca-9d744f81cf9c" InformativeScreenshot="552cb7307c73633cab5e84377c19947f.jpg" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
                             </uix:NGetText.Target>
                             <uix:NGetText.TextString>
                               <OutArgument x:TypeArguments="x:String">
@@ -399,16 +376,17 @@
                               </OutArgument>
                             </uix:NGetText.TextString>
                           </uix:NGetText>
-
-                          <uix:NGetText DisplayName="Get Text 'web-trx-channel'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NGetText_2" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <WriteLine DisplayName="Write Line transactionID" sap:VirtualizedContainerService.HintSize="497.6,122.4" sap2010:WorkflowViewState.IdRef="WriteLine_2">
+                            <InArgument x:TypeArguments="x:String">
+                              <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpValue`1_1">transactionID</CSharpValue>
+                            </InArgument>
+                          </WriteLine>
+                          <uix:NGetText DisplayName="Get Text 'web-trx-channel'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,142.4" sap2010:WorkflowViewState.IdRef="NGetText_2" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                            <uix:NGetText.ScrapingOptions>
+                              <InArgument x:TypeArguments="uix:NScrapingOptions" />
+                            </uix:NGetText.ScrapingOptions>
                             <uix:NGetText.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="8cDoI_GIrkO1ghKn0wwh-A" DesignTimeRectangle="663, 473, 75, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='web-trx-channel' tag='SPAN' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl role='text' /&gt;" Guid="285c07fb-8d48-441a-8508-80e14d6dae38" InformativeScreenshot="83b575e71f766aec67afd2033f286d9d.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/HVFgaLy84k-gdNnzAtu1dQ" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive">
-                                <uix:TargetAnchorable.Anchors>
-                                  <scg:List x:TypeArguments="uix:ITarget" Capacity="1">
-                                    <uix:Target ElementType="Text" FullSelectorArgument="&lt;webctrl tag='LABEL' aaname='Channel' /&gt;" FuzzySelectorArgument="&lt;ctrl name='Channel' role='text' /&gt;" Guid="285c07fb-8d48-441a-8508-80e14d6dae39" SearchSteps="Selector" />
-                                  </scg:List>
-                                </uix:TargetAnchorable.Anchors>
-                              </uix:TargetAnchorable>
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="663, 473, 75, 28" ElementType="Container" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl idx='4' role='grouping' /&gt;" Guid="52f3dca8-bcdd-46c8-b999-5036ba212eb3" InformativeScreenshot="83b575e71f766aec67afd2033f286d9d.jpg" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
                             </uix:NGetText.Target>
                             <uix:NGetText.TextString>
                               <OutArgument x:TypeArguments="x:String">
@@ -416,16 +394,17 @@
                               </OutArgument>
                             </uix:NGetText.TextString>
                           </uix:NGetText>
-
-                          <uix:NGetText DisplayName="Get Text 'web-trx-amount'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NGetText_3" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <WriteLine DisplayName="Write Line channel" sap:VirtualizedContainerService.HintSize="497.6,122.4" sap2010:WorkflowViewState.IdRef="WriteLine_3">
+                            <InArgument x:TypeArguments="x:String">
+                              <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpValue`1_2">channel</CSharpValue>
+                            </InArgument>
+                          </WriteLine>
+                          <uix:NGetText DisplayName="Get Text 'web-trx-amount'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,142.4" sap2010:WorkflowViewState.IdRef="NGetText_3" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                            <uix:NGetText.ScrapingOptions>
+                              <InArgument x:TypeArguments="uix:NScrapingOptions" />
+                            </uix:NGetText.ScrapingOptions>
                             <uix:NGetText.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="pMTExOr5ckW4kEI--VuIAA" DesignTimeRectangle="983, 473, 81, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='web-trx-amount' tag='SPAN' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl role='text' /&gt;" Guid="1ec43341-3367-4386-a533-ad656cd62d83" InformativeScreenshot="011bc3ca848647cacce617e048c6798b.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/MAPp54proUuSr78zTVBsfw" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive">
-                                <uix:TargetAnchorable.Anchors>
-                                  <scg:List x:TypeArguments="uix:ITarget" Capacity="1">
-                                    <uix:Target ElementType="Text" FullSelectorArgument="&lt;webctrl tag='LABEL' aaname='Nominal Web Portal (IDR)' /&gt;" FuzzySelectorArgument="&lt;ctrl name='Nominal Web Portal (IDR)' role='text' /&gt;" Guid="1ec43341-3367-4386-a533-ad656cd62d84" SearchSteps="Selector" />
-                                  </scg:List>
-                                </uix:TargetAnchorable.Anchors>
-                              </uix:TargetAnchorable>
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="983, 473, 81, 28" ElementType="Container" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl idx='5' role='grouping' /&gt;" Guid="c62f0b09-874c-4869-ae0a-80072baee34b" InformativeScreenshot="011bc3ca848647cacce617e048c6798b.jpg" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
                             </uix:NGetText.Target>
                             <uix:NGetText.TextString>
                               <OutArgument x:TypeArguments="x:String">
@@ -433,16 +412,9 @@
                               </OutArgument>
                             </uix:NGetText.TextString>
                           </uix:NGetText>
-
-                          <uix:NGetText DisplayName="Get Text 'web-trx-status'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="NGetText_4" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
+                          <uix:NGetText DisplayName="Get Text 'web-trx-status'" HealingAgentBehavior="SameAsCard" sap:VirtualizedContainerService.HintSize="497.6,142.4" sap2010:WorkflowViewState.IdRef="NGetText_4" ScopeIdentifier="257ef35c-5206-4957-8bcc-79ded01157a5" Version="V5">
                             <uix:NGetText.Target>
-                              <uix:TargetAnchorable BrowserURL="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" ContentHash="TElNtAjDY0-cWrKJu670qQ" DesignTimeRectangle="1302, 473, 84, 28" ElementType="Text" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;webctrl id='web-trx-status' tag='SPAN' /&gt;" FuzzySelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl role='text' /&gt;" Guid="f85fe8f1-24bd-407b-9c16-8bebb62e2060" InformativeScreenshot="9450318736571380ebd964def814cd54.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/42rBSc_9KUGgKRZi6m-wwg" ScopeSelectorArgument="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive">
-                                <uix:TargetAnchorable.Anchors>
-                                  <scg:List x:TypeArguments="uix:ITarget" Capacity="1">
-                                    <uix:Target ElementType="Text" FullSelectorArgument="&lt;webctrl tag='LABEL' aaname='Status Portal' /&gt;" FuzzySelectorArgument="&lt;ctrl name='Status Portal' role='text' /&gt;" Guid="f85fe8f1-24bd-407b-9c16-8bebb62e2061" SearchSteps="Selector" />
-                                  </scg:List>
-                                </uix:TargetAnchorable.Anchors>
-                              </uix:TargetAnchorable>
+                              <uix:TargetAnchorable BrowserURL="" DesignTimeRectangle="1302, 473, 84, 28" ElementType="Container" ElementVisibilityArgument="Interactive" FullSelectorArgument="&lt;wnd aaname='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' cls='Chrome_RenderWidgetHostHWND' title='Chrome Legacy Window' /&gt;&lt;ctrl name='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' role='document' /&gt;&lt;ctrl idx='6' role='grouping' /&gt;" Guid="f7f75142-8742-49ad-8399-2c9d5203b97f" InformativeScreenshot="9450318736571380ebd964def814cd54.jpg" ScopeSelectorArgument="&lt;wnd app='msedge.exe' cls='Chrome_WidgetWin_1' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enter*' /&gt;" SearchSteps="Selector" Version="V6" WaitForReadyArgument="Interactive" />
                             </uix:NGetText.Target>
                             <uix:NGetText.TextString>
                               <OutArgument x:TypeArguments="x:String">
@@ -450,63 +422,67 @@
                               </OutArgument>
                             </uix:NGetText.TextString>
                           </uix:NGetText>
-
-                          <!-- Tampilkan Hasil Get Text di Write Line -->
-                          <ui:WriteLine DisplayName="Write Line - Hasil Get Text Web" sap:VirtualizedContainerService.HintSize="532.8,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_1">
+                          <WriteLine DisplayName="Write Line - Hasil Get Text Web" sap:VirtualizedContainerService.HintSize="497.6,122.4" sap2010:WorkflowViewState.IdRef="WriteLine_1">
                             <InArgument x:TypeArguments="x:String">
                               <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpVal_WriteWeb">searchTransactionID + " | Web: " + transactionID + " | " + channel + " | " + nominal + " | " + status</CSharpValue>
                             </InArgument>
-                          </ui:WriteLine>
-
-                          <!-- Evaluasi Pencocokan Data Core vs Web -->
-                          <If DisplayName="If Web NOT_FOUND" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="If_WebNotFound">
+                          </WriteLine>
+                          <If DisplayName="If Web NOT_FOUND" sap:VirtualizedContainerService.HintSize="497.6,336" sap2010:WorkflowViewState.IdRef="If_WebNotFound">
                             <If.Condition>
                               <InArgument x:TypeArguments="x:Boolean">
-                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondNF">status.ToUpper() == "NOT_FOUND"</CSharpValue>
+                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondNF">status.Trim().ToUpper() == "NOT_FOUND"</CSharpValue>
                               </InArgument>
                             </If.Condition>
                             <If.Then>
-                              <Sequence DisplayName="Then Web NOT_FOUND" sap:VirtualizedContainerService.HintSize="416,160" sap2010:WorkflowViewState.IdRef="Sequence_ThrowNF">
-                                <ui:Throw DisplayName="Throw BRE Not Found" sap:VirtualizedContainerService.HintSize="382.4,90.4" sap2010:WorkflowViewState.IdRef="Throw_3">
-                                  <ui:Throw.Exception>
-                                    <InArgument x:TypeArguments="s:Exception">
-                                      <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowNF">new UiPath.Core.BusinessRuleException("[BRE] Data tidak sesuai dengan Web Portal (NOT_FOUND)")</CSharpValue>
-                                    </InArgument>
-                                  </ui:Throw.Exception>
-                                </ui:Throw>
+                              <Sequence DisplayName="Then Web NOT_FOUND" sap:VirtualizedContainerService.HintSize="449.6,173.6" sap2010:WorkflowViewState.IdRef="Sequence_ThrowNF">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Throw DisplayName="Throw BRE Not Found" sap:VirtualizedContainerService.HintSize="416,113.6" sap2010:WorkflowViewState.IdRef="Throw_3">
+                                  <InArgument x:TypeArguments="s:Exception">
+                                    <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowNF">new UiPath.Core.BusinessRuleException("[BRE] Data tidak sesuai dengan Web Portal (NOT_FOUND)")</CSharpValue>
+                                  </InArgument>
+                                </Throw>
                               </Sequence>
                             </If.Then>
                           </If>
-
-                          <If DisplayName="If Data Mismatch" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="If_WebMismatch">
+                          <If DisplayName="If Data Mismatch" sap:VirtualizedContainerService.HintSize="497.6,336" sap2010:WorkflowViewState.IdRef="If_WebMismatch">
                             <If.Condition>
                               <InArgument x:TypeArguments="x:Boolean">
-                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondMis">channel.ToUpper() != channelCore.ToUpper() || nominal != nominalCore || status.ToUpper() != statusCore.ToUpper()</CSharpValue>
+                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondMis">channel.Trim().ToUpper() != channelCore.ToUpper() || nominal.Trim() != nominalCore || status.Trim().ToUpper() != statusCore.ToUpper()</CSharpValue>
                               </InArgument>
                             </If.Condition>
                             <If.Then>
-                              <Sequence DisplayName="Then Web Mismatch" sap:VirtualizedContainerService.HintSize="416,160" sap2010:WorkflowViewState.IdRef="Sequence_ThrowMis">
-                                <ui:Throw DisplayName="Throw BRE Mismatch" sap:VirtualizedContainerService.HintSize="382.4,90.4" sap2010:WorkflowViewState.IdRef="Throw_4">
-                                  <ui:Throw.Exception>
-                                    <InArgument x:TypeArguments="s:Exception">
-                                      <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowMis">new UiPath.Core.BusinessRuleException("[BRE] Data tidak sesuai dengan Web Portal (Mismatch)")</CSharpValue>
-                                    </InArgument>
-                                  </ui:Throw.Exception>
-                                </ui:Throw>
+                              <Sequence DisplayName="Then Web Mismatch" sap:VirtualizedContainerService.HintSize="449.6,173.6" sap2010:WorkflowViewState.IdRef="Sequence_ThrowMis">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Throw DisplayName="Throw BRE Mismatch" sap:VirtualizedContainerService.HintSize="416,113.6" sap2010:WorkflowViewState.IdRef="Throw_4">
+                                  <InArgument x:TypeArguments="s:Exception">
+                                    <CSharpValue x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="CSharpVal_ThrowMis">new UiPath.Core.BusinessRuleException("[BRE] Data tidak sesuai dengan Web Portal (Mismatch)")</CSharpValue>
+                                  </InArgument>
+                                </Throw>
                               </Sequence>
                             </If.Then>
                           </If>
-
-                          <!-- Jika Cocok: Cek High Value AML Review atau Normal Match -->
-                          <If DisplayName="If High Value >= 10 Juta (AML Review)" sap:VirtualizedContainerService.HintSize="532.8,81.6" sap2010:WorkflowViewState.IdRef="If_AML">
+                          <If DisplayName="If High Value &gt;= 10 Juta (AML Review)" sap:VirtualizedContainerService.HintSize="497.6,781.6" sap2010:WorkflowViewState.IdRef="If_AML">
                             <If.Condition>
                               <InArgument x:TypeArguments="x:Boolean">
-                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondAML">(decimal.TryParse(nominalCore, out decimal nAML) ? nAML : 0) &gt;= 10000000</CSharpValue>
+                                <CSharpValue x:TypeArguments="x:Boolean" sap2010:WorkflowViewState.IdRef="CSharpVal_CondAML">Convert.ToDecimal(string.IsNullOrEmpty(nominalCore) ? "0" : nominalCore) &gt;= 10000000</CSharpValue>
                               </InArgument>
                             </If.Condition>
                             <If.Then>
-                              <Sequence DisplayName="Then AML Review" sap:VirtualizedContainerService.HintSize="496,220" sap2010:WorkflowViewState.IdRef="Sequence_AML">
-                                <Assign DisplayName="Set Audit Status AML" sap:VirtualizedContainerService.HintSize="462.4,81.6" sap2010:WorkflowViewState.IdRef="Assign_StatAML">
+                              <Sequence DisplayName="Then AML Review" sap:VirtualizedContainerService.HintSize="496,400" sap2010:WorkflowViewState.IdRef="Sequence_AML">
+                                <sap:WorkflowViewStateService.ViewState>
+                                  <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                    <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                  </scg:Dictionary>
+                                </sap:WorkflowViewStateService.ViewState>
+                                <Assign DisplayName="Set Audit Status AML" sap:VirtualizedContainerService.HintSize="462.4,174.4" sap2010:WorkflowViewState.IdRef="Assign_StatAML">
                                   <Assign.To>
                                     <OutArgument x:TypeArguments="x:String">
                                       <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_StatAML">auditStatus</CSharpReference>
@@ -516,7 +492,7 @@
                                     <InArgument x:TypeArguments="x:String">MATCH (HIGH_VALUE_REVIEW)</InArgument>
                                   </Assign.Value>
                                 </Assign>
-                                <Assign DisplayName="Set Ket AML" sap:VirtualizedContainerService.HintSize="462.4,81.6" sap2010:WorkflowViewState.IdRef="Assign_KetAML">
+                                <Assign DisplayName="Set Ket AML" sap:VirtualizedContainerService.HintSize="462.4,165.6" sap2010:WorkflowViewState.IdRef="Assign_KetAML">
                                   <Assign.To>
                                     <OutArgument x:TypeArguments="x:String">
                                       <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_KetAML">keteranganAudit</CSharpReference>
@@ -553,11 +529,9 @@
                               </Sequence>
                             </If.Else>
                           </If>
-
                         </Sequence>
                       </TryCatch.Try>
                       <TryCatch.Catches>
-                        <!-- Tangani BusinessRuleException (BRE) -->
                         <Catch x:TypeArguments="ui:BusinessRuleException" sap:VirtualizedContainerService.HintSize="569.6,22.4" sap2010:WorkflowViewState.IdRef="Catch_BRE">
                           <sap:WorkflowViewStateService.ViewState>
                             <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -569,8 +543,13 @@
                             <ActivityAction.Argument>
                               <DelegateInArgument x:TypeArguments="ui:BusinessRuleException" Name="bre" />
                             </ActivityAction.Argument>
-                            <Sequence DisplayName="Handle BRE" sap:VirtualizedContainerService.HintSize="496,320" sap2010:WorkflowViewState.IdRef="Sequence_CatchBRE">
-                              <Assign DisplayName="Set Audit Status BRE" sap:VirtualizedContainerService.HintSize="462.4,81.6" sap2010:WorkflowViewState.IdRef="Assign_StatBRE">
+                            <Sequence DisplayName="Handle BRE" sap:VirtualizedContainerService.HintSize="531.2,499.2" sap2010:WorkflowViewState.IdRef="Sequence_CatchBRE">
+                              <sap:WorkflowViewStateService.ViewState>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                  <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                </scg:Dictionary>
+                              </sap:WorkflowViewStateService.ViewState>
+                              <Assign DisplayName="Set Audit Status BRE" sap:VirtualizedContainerService.HintSize="497.6,174.4" sap2010:WorkflowViewState.IdRef="Assign_StatBRE">
                                 <Assign.To>
                                   <OutArgument x:TypeArguments="x:String">
                                     <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_StatBRE">auditStatus</CSharpReference>
@@ -580,7 +559,7 @@
                                   <InArgument x:TypeArguments="x:String">SUSPECT_FRAUD / BRE</InArgument>
                                 </Assign.Value>
                               </Assign>
-                              <Assign DisplayName="Set Ket BRE" sap:VirtualizedContainerService.HintSize="462.4,81.6" sap2010:WorkflowViewState.IdRef="Assign_KetBRE">
+                              <Assign DisplayName="Set Ket BRE" sap:VirtualizedContainerService.HintSize="497.6,174.4" sap2010:WorkflowViewState.IdRef="Assign_KetBRE">
                                 <Assign.To>
                                   <OutArgument x:TypeArguments="x:String">
                                     <CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpRef_KetBRE">keteranganAudit</CSharpReference>
@@ -592,15 +571,14 @@
                                   </InArgument>
                                 </Assign.Value>
                               </Assign>
-                              <ui:WriteLine DisplayName="Write Line BRE" sap:VirtualizedContainerService.HintSize="462.4,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_BRE">
+                              <WriteLine DisplayName="Write Line BRE" sap:VirtualizedContainerService.HintSize="462.4,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_BRE">
                                 <InArgument x:TypeArguments="x:String">
                                   <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpVal_LogBRE">searchTransactionID + " | " + bre.Message</CSharpValue>
                                 </InArgument>
-                              </ui:WriteLine>
+                              </WriteLine>
                             </Sequence>
                           </ActivityAction>
                         </Catch>
-                        <!-- Tangani SystemException (SE) -->
                         <Catch x:TypeArguments="s:Exception" sap:VirtualizedContainerService.HintSize="569.6,22.4" sap2010:WorkflowViewState.IdRef="Catch_SE">
                           <sap:WorkflowViewStateService.ViewState>
                             <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -635,18 +613,16 @@
                                   </InArgument>
                                 </Assign.Value>
                               </Assign>
-                              <ui:WriteLine DisplayName="Write Line SE" sap:VirtualizedContainerService.HintSize="462.4,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_SE">
+                              <WriteLine DisplayName="Write Line SE" sap:VirtualizedContainerService.HintSize="462.4,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_SE">
                                 <InArgument x:TypeArguments="x:String">
                                   <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpVal_LogSE">searchTransactionID + " | [SE ERROR] " + se.Message</CSharpValue>
                                 </InArgument>
-                              </ui:WriteLine>
+                              </WriteLine>
                             </Sequence>
                           </ActivityAction>
                         </Catch>
                       </TryCatch.Catches>
                     </TryCatch>
-
-                    <!-- Tambahkan Baris Hasil ke dtAuditResult -->
                     <ui:AddDataRow DataRow="{x:Null}" DisplayName="Add Data Row ke dtAuditResult" sap:VirtualizedContainerService.HintSize="603.2,188" sap2010:WorkflowViewState.IdRef="AddDataRow_1">
                       <ui:AddDataRow.ArrayRow>
                         <InArgument x:TypeArguments="s:Object[]">
@@ -654,50 +630,49 @@
                         </InArgument>
                       </ui:AddDataRow.ArrayRow>
                       <ui:AddDataRow.DataTable>
-                        <InOutArgument x:TypeArguments="sda:DataTable">
-                          <CSharpReference x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpRef_dtAuditOut">dtAuditResult</CSharpReference>
+                        <InOutArgument x:TypeArguments="sd:DataTable">
+                          <CSharpReference x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpRef_dtAuditOut">dtAuditResult</CSharpReference>
                         </InOutArgument>
                       </ui:AddDataRow.DataTable>
                     </ui:AddDataRow>
-
                   </Sequence>
                 </ActivityAction>
               </ui:ForEachRow.Body>
+              <ui:ForEachRow.DataTable>
+                <InArgument x:TypeArguments="sd:DataTable">
+                  <CSharpValue x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpValue_dtCoreVal">dtCoreTransactions</CSharpValue>
+                </InArgument>
+              </ui:ForEachRow.DataTable>
             </ui:ForEachRow>
           </Sequence>
         </ActivityAction>
       </uix:NApplicationCard.Body>
       <uix:NApplicationCard.OCREngine>
-        <ActivityFunc x:TypeArguments="sd:Image, scg:IEnumerable(scg:KeyValuePair(sd1:Rectangle, x:String))">
+        <ActivityFunc x:TypeArguments="sd1:Image, scg:IEnumerable(scg:KeyValuePair(sd2:Rectangle, x:String))">
           <ActivityFunc.Argument>
-            <DelegateInArgument x:TypeArguments="sd:Image" Name="Image" />
+            <DelegateInArgument x:TypeArguments="sd1:Image" Name="Image" />
           </ActivityFunc.Argument>
         </ActivityFunc>
       </uix:NApplicationCard.OCREngine>
       <uix:NApplicationCard.TargetApp>
-        <uix:TargetApp Area="-9, -9, 1938, 1038" BrowserType="Edge" ContentHash="WDnJBbj3eUCFR-WKsWgDSA" IconBase64="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" InformativeScreenshot="eee6c7d470f71ba75517a1476356bea8.jpg" Reference="u8b3JnI5KUK4kK5wl2d6cA/1Ih9o4jmFkyepQ4M8deEEA" Selector="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" Url="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" Version="V3">
-        <uix:TargetApp.SapInfo>
-          <uix:SAPElementInfo IsSapSubsystem="False" WebAutomationFramework="Default" />
-        </uix:TargetApp.SapInfo>
-      </uix:TargetApp>
-    </uix:NApplicationCard.TargetApp>
+        <uix:TargetApp Area="-9, -9, 1938, 1038" BrowserType="Edge" IconBase64="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" InformativeScreenshot="eee6c7d470f71ba75517a1476356bea8.jpg" Selector="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" Url="file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html" Version="V3">
+          <uix:TargetApp.SapInfo>
+            <uix:SAPElementInfo IsSapSubsystem="False" WebAutomationFramework="Default" />
+          </uix:TargetApp.SapInfo>
+        </uix:TargetApp>
+      </uix:NApplicationCard.TargetApp>
     </uix:NApplicationCard>
-
-    <!-- 4. Simpan Hasil Audit ke Audit_Core_Banking_Result.xlsx -->
-    <ui:WriteRange StartingCell="{x:Null}" AddHeaders="True" DisplayName="Write Range Workbook - Hasil Audit" sap:VirtualizedContainerService.HintSize="737.6,116" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="Audit_Result" WorkbookPath="Audit_Core_Banking_Result.xlsx">
+    <ui:WriteRange StartingCell="{x:Null}" DisplayName="Write Range Workbook - Hasil Audit" sap:VirtualizedContainerService.HintSize="737.6,278.4" sap2010:WorkflowViewState.IdRef="WriteRange_1" SheetName="Audit_Result" WorkbookPath="Data\Audit_Core_Banking_Result.xlsx">
       <ui:WriteRange.DataTable>
-        <InArgument x:TypeArguments="sda:DataTable">
-          <CSharpValue x:TypeArguments="sda:DataTable" sap2010:WorkflowViewState.IdRef="CSharpVal_WriteAudit">dtAuditResult</CSharpValue>
+        <InArgument x:TypeArguments="sd:DataTable">
+          <CSharpValue x:TypeArguments="sd:DataTable" sap2010:WorkflowViewState.IdRef="CSharpVal_WriteAudit">dtAuditResult</CSharpValue>
         </InArgument>
       </ui:WriteRange.DataTable>
     </ui:WriteRange>
-
-    <!-- 5. Notifikasi Selesai -->
-    <ui:WriteLine DisplayName="Write Line Selesai" sap:VirtualizedContainerService.HintSize="737.6,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_End">
+    <WriteLine DisplayName="Write Line Selesai" sap:VirtualizedContainerService.HintSize="737.6,90.4" sap2010:WorkflowViewState.IdRef="WriteLine_End">
       <InArgument x:TypeArguments="x:String">
-        <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpVal_MsgEnd">"✅ Audit Transaksi Core Banking Selesai! Total baris diproses: " + dtAuditResult.Rows.Count.ToString() + ". Hasil tersimpan di Audit_Core_Banking_Result.xlsx"</CSharpValue>
+        <CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpVal_MsgEnd">"✅ Audit Transaksi Core Banking Selesai! Total baris diproses: " + dtAuditResult.Rows.Count.ToString() + ". Hasil tersimpan di Data\\Audit_Core_Banking_Result.xlsx"</CSharpValue>
       </InArgument>
-    </ui:WriteLine>
-
+    </WriteLine>
   </Sequence>
 </Activity>
