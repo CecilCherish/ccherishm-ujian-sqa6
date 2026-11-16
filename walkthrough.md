@@ -1,55 +1,93 @@
-# Walkthrough - Perbaikan Schema Validation Error & Sinkronisasi Selektor UiPath
+# Walkthrough: Perbaikan Alur Kerja RobotCoreBank (Core Banking Audit, Fraud Detection & SE Auto-Retry)
 
-Dokumen ini mencatat investigasi, akar masalah, dan perbaikan untuk error validasi Studio dan output debug yang dilaporkan.
-
----
-
-## 1. Analisis Error yang Dilaporkan
-
-### A. Warning: `File path is required` pada `Edge Bank Nusantara - Live Settlement Monitor`
-* **Penyebab**: Pada perbaikan sebelumnya, atribut `Selector` di dalam `<uix:TargetApp BrowserType="Edge" ...>` sempat diubah menjadi selektor window desktop (`<wnd app='msedge.exe' ...>`).
-* **Dampak**: Karena `BrowserType="Edge"` disetel, UiPath Studio mewajibkan selektor target bertipe web (`<html ...>`). Jika diberikan selektor `<wnd>`, Studio menganggapnya sebagai aplikasi desktop non-browser dan menuntut parameter executable `File path`.
-* **Solusi**: Mengembalikan selektor `TargetApp` ke bentuk HTML bawaan Edge:
-  ```xml
-  <uix:TargetApp ... BrowserType="Edge" Selector="&lt;html app='msedge.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)' /&gt;" ... />
-  ```
+Dokumen ini mencatat seluruh implementasi dan penyempurnaan alur kerja [Main.xaml](file:///c:/Users/pendi/OneDrive/Documents/UiPath/RobotCoreBank/Main.xaml) untuk proses audit transaksi perbankan, deteksi *fraud*, simulasi *System Error* & *Auto-Retry*, serta pelaporan Excel multi-sheet.
 
 ---
 
-### B. Error: `This activity is missing or could not be loaded.` pada 4 Aktivitas `NGetText`
-* **Penyebab**: Atribut `InteractionMode="HardwareEvents"` sempat ditambahkan ke dalam tag `<uix:NGetText>`.
-* **Dampak**: Berbeda dengan `NTypeInto` dan `NClick` yang memiliki properti `InteractionMode`, aktivitas `NGetText` di pustaka `UiPath.UIAutomationNext.Activities` **tidak memiliki properti `InteractionMode`**. Akibatnya, XAML reader di UiPath Studio mengalami *schema mismatch* dan menolak memuat aktivitas tersebut.
-* **Solusi**: Menghapus atribut `InteractionMode` dari seluruh tag `<uix:NGetText>`. Serta memastikan tiap elemen anchor memiliki `Guid` yang valid.
+## 1. Fitur Utama yang Telah Diimplementasikan
+
+### A. Inisialisasi Pasti 11 Kolom untuk 3 DataTable
+* **Masalah Sebelumnya**: Aktivitas `<ui:BuildDataTable>` gagal mempertahankan skema 11 kolom saat runtime pada proyek C#, menyebabkan error `Input array is longer than the number of columns in this table`.
+* **Solusi Diterapkan**: Menggunakan aktivitas `Assign` dengan ekspresi C# (*collection initializer*) yang dievaluasi langsung oleh CLR tanpa error expression tree (`CS0834`/`CS8198`):
+  * `dtAuditResult`: Menampung seluruh 25 transaksi hasil audit.
+  * `dtAuditClean`: Khusus menampung transaksi berstatus `MATCH` dan `MATCH (HIGH_VALUE_REVIEW)`.
+  * `dtAuditExceptions`: Khusus menampung transaksi berkategori exception (`SUSPECT_FRAUD` / `BRE` atau `SYSTEM_ERROR` / `SE`).
+* Seluruh tabel dijamin memiliki 11 kolom:
+  `ID_Transaksi`, `Waktu_Transaksi`, `No_Rekening`, `Channel_Core`, `Nominal_Core`, `Status_Core`, `Web_Channel`, `Web_Nominal`, `Web_Status`, `Audit_Status`, `Keterangan_Audit`.
 
 ---
 
-### C. Output Debug Masih Menjalankan Selektor Lama (`<webctrl id='search-trx-id' ...>`)
-* **Penyebab**: Karena `Main.xaml` sebelumnya memiliki error validasi *activity missing*, UiPath Studio **menolak mengompilasi file baru**. Saat tombol Debug ditekan, Studio secara otomatis mengeksekusi assembly *cache* lama (versi yang masih menggunakan `<webctrl>`).
-* **Solusi**: Setelah error validasi diperbaiki dan bersih, UiPath Studio dapat mengompilasi ulang dan mengeksekusi alur kerja terbaru.
+### B. Eksperimen Simulasi System Error & Auto-Retry (Transaksi ke-7)
+* **Kebutuhan**: Mensimulasikan browser freeze/crash pada transaksi ke-7 (`TRX-2026-0007`), memicu prosedur *Re-Init*, membuka kembali browser, dan mengulang kembali transaksi ke-7 hingga berhasil.
+* **Mekanisme yang Dibangun**:
+  1. Variabel kontrol:
+     * `simulatedCrashDone` (*Boolean*, default `false`): Memastikan crash hanya disimulasikan satu kali saat percobaan pertama transaksi ke-7.
+     * `retryCount` (*Int32*, default `0`): Menghitung jumlah percobaan per transaksi.
+     * `maxRetry` (*Int32*, default `3`): Batas maksimal percobaan ulang.
+     * `transactionSuccess` (*Boolean*, default `false`): Menandai status akhir pemrosesan per transaksi.
+  2. Perulangan `While` (`retryCount < maxRetry && !transactionSuccess`) membungkus blok `TryCatch`.
+  3. Pada transaksi ke-7 di percobaan pertama (`searchTransactionID == "TRX-2026-0007" && !simulatedCrashDone`):
+     * Set `simulatedCrashDone = true`.
+     * Eksekusi `<ui:KillProcess>` pada `msedge` dan `chrome` (`ContinueOnError="True"`).
+     * Lempar `Throw new System.Exception("[SE Simulasi] Browser freeze / crash secara paksa pada transaksi ke-7!")`.
+  4. Blok `Catch (System.Exception se)`:
+     * Menangkap error simulasi SE atau gangguan teknis lainnya.
+     * Melakukan increment `retryCount++`.
+     * Jika `retryCount < maxRetry`:
+       * Menjalankan prosedur **Re-Init**: Kill sisa browser $\rightarrow$ Delay 1s $\rightarrow$ `<ui:StartProcess>` membuka kembali portal Edge/Chrome $\rightarrow$ Delay 2s hingga portal siap.
+       * Loop `While` mengulang kembali transaksi ke-7 dari awal.
+     * Jika `retryCount >= maxRetry`:
+       * Mencatat status sebagai `SYSTEM_ERROR` dan keluar dari loop.
+  5. Catatan penting: Blok `Catch (BusinessRuleException bre)` **tidak pernah di-retry** karena merupakan validasi data bisnis (langsung dicatat `SUSPECT_FRAUD` dan lanjut ke transaksi berikutnya).
 
 ---
 
-## 2. Rangkuman Konfigurasi Final di `Main.xaml`
-
-| Aktivitas | DisplayName | InteractionMode | Target / Selector |
-| :--- | :--- | :--- | :--- |
-| **`NApplicationCard`** | Edge Bank Nusantara - Live Settlement Monitor | Default (`ScopeGuid`) | `BrowserType="Edge"`, `Selector="<html app='msedge.exe' ...>"` |
-| **`NTypeInto`** | Type Into 'Chrome Legacy Window' | `HardwareEvents` | Fuzzy Selector ke `Chrome Legacy Window` (Input Box) + Anchor |
-| **`NClick`** | Click 'Cari Transaksi' | `HardwareEvents` | Full Selector ke tombol Cari Transaksi di `Chrome Legacy Window` |
-| **`Delay`** | Delay Render Web (500ms) | - | `00:00:00.5000000` |
-| **`NGetText` (ID)** | Get Text 'web-trx-id' | *(Bawaan)* | Target `<ctrl role='text' />` + Anchor `<ctrl name='ID Transaksi' />` |
-| **`NGetText` (Ch)** | Get Text 'web-trx-channel' | *(Bawaan)* | Target `<ctrl role='text' />` + Anchor `<ctrl name='Channel' />` |
-| **`NGetText` (Nom)** | Get Text 'web-trx-amount' | *(Bawaan)* | Target `<ctrl role='text' />` + Anchor `<ctrl name='Nominal Web Portal (IDR)' />` |
-| **`NGetText` (Stat)** | Get Text 'web-trx-status' | *(Bawaan)* | Target `<ctrl role='text' />` + Anchor `<ctrl name='Status Portal' />` |
+### C. Pemisahan Sheet pada File Output Excel
+* **File Utama 1**: [Data\Audit_CleanAndException.xlsx](file:///c:/Users/pendi/OneDrive/Documents/UiPath/RobotCoreBank/Data/Audit_CleanAndException.xlsx)
+  * **Sheet 1 (`Audit_Clean`)**: Berisi seluruh baris dari `dtAuditClean` (khusus status `MATCH` dan `MATCH (HIGH_VALUE_REVIEW)`).
+  * **Sheet 2 (`Audit_Exceptions`)**: Berisi seluruh baris dari `dtAuditExceptions` (khusus status `SUSPECT_FRAUD` / `BRE` dan `SYSTEM_ERROR` / `SE`).
+* **File Utama 2**: [Data\Audit_Core_Banking_Result.xlsx](file:///c:/Users/pendi/OneDrive/Documents/UiPath/RobotCoreBank/Data/Audit_Core_Banking_Result.xlsx)
+  * **Sheet (`Audit_Result`)**: Berisi seluruh 25 transaksi gabungan dari `dtAuditResult`.
 
 ---
 
-## 3. Langkah Menjalankan di UiPath Studio
+### D. Optimasi Selektor Target Web Portal
+* Target NApplicationCard menggunakan wildcard fleksibel `app='*.exe'` sehingga kompatibel baik di **Microsoft Edge** (`msedge.exe`) maupun **Google Chrome** (`chrome.exe`).
+* Selektor NGetText menggunakan tag spesifik HTML `SPAN` dengan ID pasti:
+  * `<webctrl id='web-trx-id' tag='SPAN' />`
+  * `<webctrl id='web-trx-channel' tag='SPAN' />`
+  * `<webctrl id='web-trx-amount' tag='SPAN' />`
+  * `<webctrl id='web-trx-status' tag='SPAN' />`
 
-1. **Reload / Buka Ulang File**:
-   - Jika tab `Main.xaml` sedang terbuka di Studio, **tutup tab tersebut lalu buka kembali** (atau klik **Yes / Reload** jika muncul pop-up notifikasi perubahan eksternal dari disk).
-2. **Periksa Panel Error List**:
-   - Pastikan panel **Error List** di bagian bawah Studio sudah **0 Errors** dan **0 Warnings**.
-3. **Pastikan Portal Terbuka**:
-   - Pastikan halaman portal `banking-monitoring-portal.html` telah terbuka di Microsoft Edge.
-4. **Klik Debug File / Run File**.
+---
+
+## 2. Pengaturan Wajib Sebelum Eksekusi
+
+> [!CAUTION]
+> **Aktifkan Opsi "Allow access to file URLs" pada Browser:**
+> Karena portal bank dijalankan dari berkas lokal (`file:///C:/TUGASKKu/sqa-batch-31/banking-monitoring-portal.html`), ekstensi browser UiPath **wajib** diberi izin akses file lokal:
+> 
+> * **Jika menggunakan Microsoft Edge**:
+>   1. Buka Edge $\rightarrow$ buka URL: `edge://extensions`
+>   2. Temukan ekstensi **UiPath Browser Automation** $\rightarrow$ klik **Details** (*Rincian*).
+>   3. Aktifkan toggle **"Allow access to file URLs"** (*Izinkan akses ke URL file*).
+> * **Jika menggunakan Google Chrome**:
+>   1. Buka Chrome $\rightarrow$ buka URL: `chrome://extensions`
+>   2. Temukan ekstensi **UiPath Web Automation** $\rightarrow$ klik **Details**.
+>   3. Aktifkan toggle **"Allow access to file URLs"**.
+
+---
+
+## 3. Panduan Menjalankan Alur Kerja
+
+> [!TIP]
+> **Rekomendasi: Jalankan dengan Run File (`Ctrl + F5`):**
+> * **Jika menggunakan Debug (`F5`)**: Setiap kali robot menemui `Throw` (baik simulasi SE pada transaksi ke-7 maupun BRE saat fraud terdeteksi), Studio akan jeda sementara (*Pause / Highlight Kuning*). Anda harus menekan tombol **Continue (`F5`)** pada toolbar Studio agar proses berlanjut.
+> * **Jika menggunakan Run File (`Ctrl + F5`)**: Robot akan berjalan lancar secara otomatis dari awal hingga akhir, melakukan auto-retry pada transaksi ke-7, memisahkan transaksi ke dua sheet, dan menghasilkan file Excel lengkap.
+
+---
+
+## 4. Hasil Verifikasi Sistem
+- **Struktur XML [Main.xaml](file:///c:/Users/pendi/OneDrive/Documents/UiPath/RobotCoreBank/Main.xaml)**: Valid (100% Clean Parse).
+- **Inisialisasi DataTable**: Ketiga tabel (`dtAuditResult`, `dtAuditClean`, `dtAuditExceptions`) terinisialisasi tepat 11 kolom.
+- **Folder Output**: Folder [Data](file:///c:/Users/pendi/OneDrive/Documents/UiPath/RobotCoreBank/Data) siap menerima file hasil pemeriksaan.

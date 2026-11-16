@@ -1,169 +1,209 @@
-# Implementation Plan: UiPath Core Banking Transaction Audit & Fraud Detection
+# Implementation Plan: Simulasi System Error (Auto-Retry & Re-Init) dan Pelaporan Excel Multi-Sheet
+
+Dokumen ini menguraikan rencana perbaikan dan penambahan fitur pada alur kerja **RobotCoreBank** (Main.xaml) berdasarkan 2 kebutuhan baru:
+1. **Eksperimen Simulasi System Error & Auto-Retry**: Menyimulasikan browser freeze pada transaksi ke-7, menjalankan prosedur **Re-Init** (membuka kembali browser), dan mengulang transaksi ke-7 hingga berhasil.
+2. **Penyempurnaan Pelaporan Excel**: Memisahkan hasil audit menjadi 2 sheet terpisah pada file Data\Audit_CleanAndException.xlsx:
+   - Sheet 1: `Audit_Clean` (khusus transaksi SUCCESS / MATCH)
+   - Sheet 2: `Audit_Exceptions` (khusus transaksi berstatus BRE atau SE)
+
+---
 
 ## 1. Goal Description
-Implement an end-to-end automated audit workflow in UiPath (`Main.xaml`, C# expression language) that:
-1. Fixes the issue where `Get Text` does not output values to `WriteLine` due to hardcoded text selectors.
-2. Reads transaction data from `Core_Banking_Log.xlsx` (`Core_Transactions` sheet).
-3. Evaluates fraud & business rules using **BusinessRuleException (BRE)**:
-   - Invalid account numbers (`No_Rekening` length != 10 digits).
-   - Zero or invalid nominal amounts (`Nominal_Core <= 0` with status `SUCCESS`).
-4. Performs Web Portal lookups on `banking-monitoring-portal.html` in Microsoft Edge for valid transactions:
-   - Handles **SystemException (SE)** for application errors (browser crash, selector timeout, network failure).
-5. Compares Core Banking values with Web Portal values:
-   - High-value transactions ($\ge \text{Rp } 10.000.000$) flagged as `MATCH (HIGH_VALUE_REVIEW)` for AML review.
-   - Matching transactions marked as `MATCH`.
-   - Mismatches or `NOT_FOUND` flagged as `MISMATCH / SUSPECT_FRAUD`.
-6. Writes comprehensive audit results to `Audit_Core_Banking_Result.xlsx` (`Audit_Result` sheet).
-7. Explores browser inspection & MCP integration.
+
+Alur kerja audit core banking akan ditingkatkan ke standar enterprise **REFramework Exception Handling** dengan membedakan secara tegas antara:
+- **Business Rule Exception (BRE)**: Anomali data bisnis (seperti rekening != 10 digit atau data mismatch dengan portal). BRE **tidak di-retry** karena data input tidak akan berubah, melainkan langsung dicatat ke sheet `Audit_Exceptions`.
+- **System Exception (SE)**: Kegagalan teknis infrastruktur/aplikasi (browser freeze, crash, network timeout). SE **wajib di-retry** (maksimal 3 kali) dengan prosedur **Re-Init** (menutup paksa sisa proses browser dan meluncurkan ulang web portal) sebelum mengulang transaksi yang sama.
+
+Pada transaksi ke-7 (`TRX-2026-0007`), robot akan memicu simulasi crash pada percobaan pertama untuk menguji mekanisme Re-Init dan auto-retry hingga berhasil.
 
 ---
 
-## 2. Analisis Masalah: Get Text Belum Tampil di Write Line
+## 2. User Review Required
 
-### Penyebab Utama (Root Cause):
-Pada `Main.xaml` yang ada saat ini, aktivitas `NGetText` menggunakan selector desktop accessibility dengan teks yang di-hardcode ke data rekaman pertama:
-- **ID Transaksi**: `<ctrl name='TRX-2026-0001' role='text' />`
-- **Channel**: `<ctrl name='BI-FAST' role='text' />`
-- **Nominal**: `<ctrl name='1500000' role='text' />`
-- **Status**: `<ctrl name='SUCCESS' role='text' />`
+> [!IMPORTANT]
+> **Dukungan Fleksibel Browser (Edge & Chrome):**
+> Anda menyebutkan "Tutup Google Chrome secara paksa", sedangkan pada pengujian sebelumnya kita menggunakan Microsoft Edge. 
+> - Alur kerja akan dibuat fleksibel menggunakan penamaan proses dinamis (`msedge` atau `chrome`) dan selector berbasis `app='*.exe' title='Bank Nusantara - Live Settlement Monitoring Portal (Day 30 Enterprise REFramework)'`.
+> - Robot dapat mendeteksi browser apa pun yang sedang Anda gunakan (Edge maupun Google Chrome).
 
-Ketika robot mencari ID transaksi lain (misalnya `TRX-2026-0002`), halaman web menampilkan teks `TRX-2026-0002` dan `250000`. Selector UiPath tetap mencari teks `'TRX-2026-0001'`, sehingga aktivitas `Get Text` gagal menemukan elemen atau menghasilkan nilai kosong (`null`), yang menyebabkan `WriteLine` tidak menampilkan hasil yang diharapkan.
-
-### Solusi Perbaikan:
-Ganti selector teks statis menjadi HTML Web Selector yang dinamis mengacu langsung pada elemen `id` di DOM:
-- **ID Transaksi**: `<webctrl id='web-trx-id' tag='SPAN' />`
-- **Channel**: `<webctrl id='web-trx-channel' tag='SPAN' />`
-- **Nominal**: `<webctrl id='web-trx-amount' tag='SPAN' />`
-- **Status**: `<webctrl id='web-trx-status' tag='SPAN' />`
+> [!NOTE]
+> **Mekanisme Simulasi Freeze Transaksi ke-7:**
+> Simulasi crash akan otomatis dipicu pada `searchTransactionID == "TRX-2026-0007"` saat `simulatedCrashDone == false`:
+> 1. Robot mencatat log peringatan simulasi crash.
+> 2. Robot mematikan proses browser secara paksa (`Kill Process`).
+> 3. Robot melempar `SystemException: "[SE Simulasi] Browser Freeze pada transaksi ke-7!"`.
+> 4. Blok Catch SE menangkap error, memicu prosedur Re-Init (membuka kembali portal), menaikkan `retryCount`, dan mencoba ulang `TRX-2026-0007`.
+> 5. Pada percobaan kedua, transaksi ke-7 berhasil diekstrak dan masuk ke sheet `Audit_Clean`.
 
 ---
 
-## 3. Alur Kerja (Workflow Architecture)
+## 3. Workflow Architecture & Diagram
 
 ```mermaid
 flowchart TD
-    Start([Mulai]) --> ReadExcel[Read Range: Core_Banking_Log.xlsx]
-    ReadExcel --> InitDT[Build Output DataTable dtAuditResult]
-    InitDT --> AttachApp[NApplicationCard: Edge Portal]
-    AttachApp --> LoopRows[For Each Row in dtCoreTransactions]
+    Start([Mulai: Main.xaml]) --> ReadExcel[Read Range: Core_Banking_Log.xlsx]
+    ReadExcel --> InitDTs[Inisialisasi 2 DataTable 11 Kolom:<br/>1. dtAuditClean<br/>2. dtAuditExceptions]
+    InitDTs --> LoopRows[For Each Row in dtCoreTransactions]
     
-    LoopRows --> ValidateBRE{Cek Aturan Fraud / BRE}
+    LoopRows --> ResetRowState[Reset: retryCount = 0<br/>transactionSuccess = false]
+    ResetRowState --> WhileRetry{While retryCount < maxRetry<br/>AND !transactionSuccess}
     
-    ValidateBRE -- "No_Rekening != 10 digit" --> BRE_Rekening[BRE: Nomor Rekening Tidak Valid]
-    ValidateBRE -- "Nominal <= 0 & Status SUCCESS" --> BRE_Nominal[BRE: Nominal 0 / Fraud]
+    WhileRetry -- Iterasi Percobaan --> TryBlock[Try: Proses Transaksi]
     
-    BRE_Rekening --> AddRowBRE[Catat ke dtAuditResult:\nSUSPECT_FRAUD / BRE]
-    BRE_Nominal --> AddRowBRE
+    TryBlock --> PreCheck{Pre-Validation Core:<br/>Rekening != 10 Digit?<br/>Nominal <= 0 SUCCESS?}
+    PreCheck -- Anomali Bisnis --> ThrowBRE[Throw BusinessRuleException]
     
-    ValidateBRE -- Valid --> TryWeb[Try Web Search & Get Text]
+    PreCheck -- Lolos Validasi --> SimCheck{TRX-2026-0007 DAN<br/>!simulatedCrashDone?}
+    SimCheck -- Ya (Simulasi Crash) --> ExecCrash[1. simulatedCrashDone = true<br/>2. KillProcess Browser<br/>3. Throw SystemException 'Freeze!']
+    SimCheck -- Tidak --> WebOps[Buka/Cari di Web Portal:<br/>Type Into TRX-ID & Click Cari]
     
-    subgraph WebInteraction [Web UI Automation with Try-Catch SE]
-        TryWeb --> TypeTRX[Type Into: search-trx-id]
-        TypeTRX --> ClickSearch[Click: btn-search-trx]
-        ClickSearch --> GetWebValues[Get Text: web-trx-id, channel, amount, status]
-    end
+    WebOps --> GetTextOps[Get Text: ID, Channel, Nominal, Status]
+    GetTextOps --> PostCheck{Post-Validation:<br/>NOT_FOUND / Mismatch / AML?}
+    PostCheck -- Mismatch / NF --> ThrowBRE
+    PostCheck -- Lolos / AML --> SetClean[Set auditStatus = MATCH / HIGH_VALUE_REVIEW<br/>transactionSuccess = true]
     
-    GetWebValues --> CompareData{Bandingkan Core vs Web}
+    TryBlock -- Catch BRE --> HandleBRE[Catch BusinessRuleException:<br/>auditStatus = SUSPECT_FRAUD<br/>keteranganAudit = bre.Message<br/>transactionSuccess = true<br/>JANGAN RETRY]
     
-    CompareData -- "Status Web NOT_FOUND / Nilai Beda" --> MismatchRow[Catat: MISMATCH / SUSPECT_FRAUD]
-    CompareData -- "Cocok & Nominal >= 10jt" --> AMLRow[Catat: MATCH HIGH_VALUE_REVIEW]
-    CompareData -- "Cocok & Nominal < 10jt" --> MatchRow[Catat: MATCH]
+    TryBlock -- Catch SE --> HandleSE[Catch SystemException:<br/>retryCount++<br/>Log: Percobaan gagal]
+    HandleSE --> MaxCheck{retryCount < maxRetry?}
+    MaxCheck -- Ya (Retry) --> ReInit[Prosedur Re-Init:<br/>1. Kill sisa proses browser<br/>2. Start Process / Buka ulang Portal<br/>3. Delay 2s ready state]
+    MaxCheck -- Tidak (Gagal Permanen) --> SetSEFail[auditStatus = SYSTEM_ERROR<br/>transactionSuccess = true]
     
-    WebInteraction -- Catch SystemException SE --> HandleSE[Catat: SYSTEM_EXCEPTION]
+    ReInit --> WhileRetry
     
-    AddRowBRE --> NextRow{Ada baris lagi?}
-    MismatchRow --> NextRow
-    AMLRow --> NextRow
-    MatchRow --> NextRow
-    HandleSE --> NextRow
+    SetClean --> SplitSheet{Pemisahan Data Row}
+    HandleBRE --> SplitSheet
+    SetSEFail --> SplitSheet
     
-    NextRow -- Ya --> LoopRows
-    NextRow -- Tidak --> WriteExcel[Write Range Workbook: Audit_Core_Banking_Result.xlsx]
-    WriteExcel --> End([Selesai])
+    SplitSheet -- Status MATCH --> AddClean[Add Data Row ke dtAuditClean]
+    SplitSheet -- Status Fraud / Error --> AddExceptions[Add Data Row ke dtAuditExceptions]
+    
+    AddClean --> NextRow[Lanjut Baris Berikutnya]
+    AddExceptions --> NextRow
+    
+    NextRow --> AllDone{Semua 25 Baris Selesai?}
+    AllDone -- Belum --> LoopRows
+    AllDone -- Ya --> WriteExcel[Write Range Workbook ke Data/Audit_CleanAndException.xlsx:<br/>- Sheet 'Audit_Clean'<br/>- Sheet 'Audit_Exceptions']
+    WriteExcel --> EndApp([Selesai: Rekapitulasi Berhasil])
 ```
 
 ---
 
-## 4. Rincian Implementasi
+## 4. Proposed Changes
 
-### A. Membaca Data Transaksi Excel
-- File: `Core_Banking_Log.xlsx`
-- Sheet: `Core_Transactions`
-- Activity: `UiPath.Excel.Activities.ReadRangeWorkbook`
-- Output: `dtCoreTransactions` (`System.Data.DataTable`)
+### Component: `Main.xaml`
 
-### B. Inisialisasi DataTable Hasil Audit
-- Activity: `UiPath.Core.Activities.BuildDataTable`
-- Output: `dtAuditResult` (`System.Data.DataTable`)
-- Struktur Kolom (11 Kolom):
-  1. `ID_Transaksi`
-  2. `Waktu_Transaksi`
-  3. `No_Rekening`
-  4. `Channel_Core`
-  5. `Nominal_Core`
-  6. `Status_Core`
-  7. `Web_Channel`
-  8. `Web_Nominal`
-  9. `Web_Status`
-  10. `Audit_Status`
-  11. `Keterangan_Audit`
+#### 1. Penambahan Variabel Pengendali Retry & Multi-Sheet
+- `dtAuditClean` (`System.Data.DataTable`): Menampung baris transaksi sukses/bersih.
+- `dtAuditExceptions` (`System.Data.DataTable`): Menampung baris transaksi anomali (BRE) atau error sistem (SE).
+- `simulatedCrashDone` (`System.Boolean`, default: `false`): Memastikan simulasi crash ke-7 hanya terjadi 1 kali.
+- `retryCount` (`System.Int32`): Menghitung iterasi retry per transaksi.
+- `maxRetry` (`System.Int32`, default: `3`): Batas maksimal retry transaksi.
+- `transactionSuccess` (`System.Boolean`): Indikator keluar dari loop retry.
+- `browserExe` (`System.String`, default: `"msedge"` atau `"chrome"`): Proses browser yang dikontrol.
 
-### C. Logika Fraud Check & BusinessRuleException (BRE)
-1. **Aturan Rekening**:
-   - Kondisi C#: `CurrentRow["No_Rekening"].ToString().Trim().Length != 10`
-   - Tindakan: Set `Audit_Status = "SUSPECT_FRAUD / BRE"`, `Keterangan_Audit = "[BRE] Nomor rekening tidak valid (" + CurrentRow["No_Rekening"].ToString() + "): panjang bukan 10 digit (Suspect Anomali/Fraud)"`.
-   - Web Channel/Nominal/Status diisi `"-"` (tidak perlu pencarian web).
-2. **Aturan Nominal 0 / Status SUCCESS**:
-   - Kondisi C#: `Convert.ToDecimal(CurrentRow["Nominal_Core"]) <= 0 && CurrentRow["Status_Core"].ToString().ToUpper() == "SUCCESS"`
-   - Tindakan: Set `Audit_Status = "SUSPECT_FRAUD / BRE"`, `Keterangan_Audit = "[BRE] Nominal transaksi tidak valid / 0 (" + CurrentRow["Nominal_Core"].ToString() + ") dengan status SUCCESS (Suspect Fraud)"`.
-   - Web Channel/Nominal/Status diisi `"-"`.
+#### 2. Inisialisasi Dua DataTable (11 Kolom)
+```csharp
+dtAuditClean = new System.Data.DataTable("Audit_Clean") {
+    Columns = {
+        "ID_Transaksi", "Waktu_Transaksi", "No_Rekening", 
+        "Channel_Core", "Nominal_Core", "Status_Core",
+        "Web_Channel", "Web_Nominal", "Web_Status", 
+        "Audit_Status", "Keterangan_Audit"
+    }
+};
 
-### D. Interaksi Web Portal & Penanganan SystemException (SE)
-- Menggunakan `TryCatch`:
-  - `Try`:
-    - `NTypeInto`: Masukkan `CurrentRow["ID_Transaksi"].ToString()` ke `#search-trx-id`.
-    - `NClick`: Klik `#btn-search-trx`.
-    - `NGetText` (4x): Ambil `#web-trx-id`, `#web-trx-channel`, `#web-trx-amount`, `#web-trx-status`.
-    - `WriteLine`: `transactionID + " | " + channel + " | " + nominal + " | " + status`.
-    - Cek Hasil:
-      - Jika `webStatus == "NOT_FOUND"` atau data tidak cocok:
-        - `Audit_Status = "MISMATCH / SUSPECT_FRAUD"`
-        - `Keterangan_Audit = "[BRE] Data transaksi tidak ditemukan di Web Portal atau berbeda"`
-      - Jika cocok dan `Convert.ToDecimal(CurrentRow["Nominal_Core"]) >= 10000000`:
-        - `Audit_Status = "MATCH (HIGH_VALUE_REVIEW)"`
-        - `Keterangan_Audit = "Transaksi valid namun nominal tinggi (>= 10 jt) wajib review AML"`
-      - Jika cocok:
-        - `Audit_Status = "MATCH"`
-        - `Keterangan_Audit = "Data sesuai dengan Web Portal"`
-  - `Catch (System.Exception ex)`:
-    - `Audit_Status = "SYSTEM_EXCEPTION / SE"`
-    - `Keterangan_Audit = "[SE] " + ex.Message`
+dtAuditExceptions = new System.Data.DataTable("Audit_Exceptions") {
+    Columns = {
+        "ID_Transaksi", "Waktu_Transaksi", "No_Rekening", 
+        "Channel_Core", "Nominal_Core", "Status_Core",
+        "Web_Channel", "Web_Nominal", "Web_Status", 
+        "Audit_Status", "Keterangan_Audit"
+    }
+};
+```
 
-### E. Menyimpan Hasil Audit ke Excel
-- File: `Audit_Core_Banking_Result.xlsx`
-- Sheet: `Audit_Result`
-- Activity: `UiPath.Excel.Activities.WriteRangeWorkbook` (Write DataTable `dtAuditResult`).
+#### 3. Logika Simulasi Crash pada Transaksi ke-7
+Di dalam `Try`, sebelum pencarian web:
+```csharp
+if (searchTransactionID == "TRX-2026-0007" && !simulatedCrashDone)
+{
+    simulatedCrashDone = true;
+    // Log simulasi
+    // Kill Process msedge/chrome
+    // Throw new System.Exception("[SE Simulasi] Browser freeze / crash secara paksa pada transaksi ke-7!")
+}
+```
 
-### F. Terkait MCP Browser (`https://github.com/browsermcp/mcp`)
-- BrowserMCP adalah MCP server untuk integrasi AI dengan Chromium DevTools protocol.
-- Di lingkungan Antigravity ini, sudah ada built-in subagent `browser` dengan Chrome DevTools protocol.
-- Untuk automasi RPA UiPath, eksekusi dilakukan secara native oleh paket `UiPath.UIAutomation.Activities` melalui Microsoft Edge.
+#### 4. Prosedur Re-Init di dalam Catch `System.Exception`
+Saat tertangkap `System.Exception`:
+```csharp
+retryCount++;
+if (retryCount < maxRetry)
+{
+    // Log Re-Init
+    // 1. Kill Process browser yang hang
+    // 2. Luncurkan ulang URL portal web
+    // 3. Delay 2 detik untuk stabilisasi rendering
+    // 4. Lanjut ke iterasi while berikutnya (mengulang baris yang sama)
+}
+else
+{
+    auditStatus = "SYSTEM_ERROR";
+    keteranganAudit = "[SE Gagal setelah " + maxRetry.ToString() + "x retry] " + se.Message;
+    transactionSuccess = true;
+}
+```
+
+#### 5. Pemisahan Alokasi Row ke `dtAuditClean` vs `dtAuditExceptions`
+Setelah transaksi selesai (baik sukses, lolos AML, maupun exception):
+```csharp
+var rowData = new object[] {
+    searchTransactionID, waktu, rek, channelCore, nominalCore, statusCore,
+    channel, nominal, status, auditStatus, keteranganAudit
+};
+
+if (auditStatus == "MATCH" || auditStatus == "MATCH (HIGH_VALUE_REVIEW)")
+{
+    dtAuditClean.Rows.Add(rowData);
+}
+else
+{
+    dtAuditExceptions.Rows.Add(rowData);
+}
+```
+
+#### 6. Penulisan ke File `Data\Audit_CleanAndException.xlsx`
+Menggunakan aktivitas `WriteRange` terpisah:
+1. **Sheet `Audit_Clean`**:
+   - `WorkbookPath`: `"Data\Audit_CleanAndException.xlsx"`
+   - `SheetName`: `"Audit_Clean"`
+   - `DataTable`: `dtAuditClean`
+   - `AddHeaders`: `True`
+2. **Sheet `Audit_Exceptions`**:
+   - `WorkbookPath`: `"Data\Audit_CleanAndException.xlsx"`
+   - `SheetName`: `"Audit_Exceptions"`
+   - `DataTable`: `dtAuditExceptions`
+   - `AddHeaders`: `True`
 
 ---
 
-## 5. Rencana Verifikasi
-1. Validasi struktur file `Main.xaml` dan kecocokan sintaks C#.
-2. Buka `banking-monitoring-portal.html` di Edge.
-3. Jalankan `Main.xaml` dari UiPath Studio.
-4. Periksa Output Panel untuk memastikan `WriteLine` menampilkan nilai hasil `Get Text` setiap baris transaksi.
-5. Verifikasi isi file `Audit_Core_Banking_Result.xlsx`:
-   - `TRX-2026-0005` (Rekening `12345`) $\rightarrow$ `SUSPECT_FRAUD / BRE`
-   - `TRX-2026-0008` (Nominal `12000000`) $\rightarrow$ `MATCH (HIGH_VALUE_REVIEW)`
-   - `TRX-2026-0013` (Nominal `0`) $\rightarrow$ `SUSPECT_FRAUD / BRE`
-   - `TRX-2026-0018` (Rekening `9988`) $\rightarrow$ `SUSPECT_FRAUD / BRE`
-   - Transaksi normal $\rightarrow$ `MATCH`
+## 5. Verification Plan
 
----
+### Automated Checks
+1. Memeriksa integritas skema file XML `Main.xaml` via Python XML parser.
+2. Memastikan tidak ada error kompilasi C# (bebas dari `CS0834` dan `CS8198`).
+3. Memverifikasi struktur file output `Audit_CleanAndException.xlsx` memiliki 2 sheet dengan 11 kolom.
 
-## CATATAN TAMBAHAN
-Menyertakan Activity Log dan Komentar
+### Manual Verification oleh User
+1. Buka portal di browser (Edge / Chrome).
+2. Jalankan `Main.xaml` via **Run File (`Ctrl + F5`)**.
+3. Amati log di panel Output:
+   - Baris 1-6 berjalan normal.
+   - Pada baris ke-7 (`TRX-2026-0007`), amati log simulasi crash: browser tertutup secara paksa.
+   - Amati log Re-Init: browser dibuka kembali, navigasi ke portal monitoring.
+   - Transaksi ke-7 diulang kembali dan berhasil diproses.
+   - Transaksi 8-25 selesai diproses hingga akhir.
+4. Buka file hasil: Data\Audit_CleanAndException.xlsx:
+   - **Sheet `Audit_Clean`**: Berisi seluruh transaksi sukses (termasuk `TRX-2026-0007` yang berhasil setelah retry, dan transaksi AML high value).
+   - **Sheet `Audit_Exceptions`**: Berisi seluruh anomali fraud (rekening tidak valid, nominal 0 sukses, mismatch).
